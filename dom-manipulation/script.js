@@ -3,14 +3,17 @@ let quotes = JSON.parse(localStorage.getItem("quotes")) || [];
 
 // Function to display a random quote
 function showRandomQuote() {
+    let quoteDisplay = document.getElementById("quoteDisplay");
+
     if (quotes.length === 0) {
-        document.getElementById("quoteDisplay").innerHTML = "<p>No quotes available.</p>";
+        quoteDisplay.textContent = "No quotes available.";
         return;
     }
+
     let randomIndex = Math.floor(Math.random() * quotes.length);
     let randomQuote = quotes[randomIndex];
 
-    document.getElementById("quoteDisplay").innerHTML = `<p>"${randomQuote.text}" - ${randomQuote.category}</p>`;
+    quoteDisplay.textContent = `"${randomQuote.text}" - ${randomQuote.category}`;
 }
 
 // Function to add a new quote
@@ -44,9 +47,13 @@ function populateCategories() {
     let categorySelect = document.getElementById("categoryFilter");
     let uniqueCategories = ["All Categories", ...new Set(quotes.map(q => q.category))];
 
-    categorySelect.innerHTML = uniqueCategories.map(category => 
-        `<option value="${category}">${category}</option>`
-    ).join("");
+    categorySelect.innerHTML = "";
+    uniqueCategories.forEach(category => {
+        let option = document.createElement("option");
+        option.textContent = category;
+        option.value = category;
+        categorySelect.appendChild(option);
+    });
 }
 
 // Function to filter quotes by category
@@ -58,9 +65,16 @@ function filterQuotes() {
         ? quotes 
         : quotes.filter(q => q.category === selectedCategory);
 
-    quoteDisplay.innerHTML = filteredQuotes.length === 0 
-        ? "<p>No quotes available in this category.</p>"
-        : filteredQuotes.map(q => `<p>"${q.text}" - ${q.category}</p>`).join("");
+    if (filteredQuotes.length === 0) {
+        quoteDisplay.textContent = "No quotes available in this category.";
+    } else {
+        quoteDisplay.innerHTML = "";
+        filteredQuotes.forEach(q => {
+            let p = document.createElement("p");
+            p.textContent = `"${q.text}" - ${q.category}`;
+            quoteDisplay.appendChild(p);
+        });
+    }
 
     localStorage.setItem("selectedCategory", selectedCategory);
 }
